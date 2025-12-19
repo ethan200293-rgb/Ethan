@@ -7,5 +7,5 @@ export default defineConfig({
   // CRITICAL: This base path must match your GitHub repository name
   // Because your URL is https://ethan200293-rgb.github.io/Ethan/
   // The base must be '/Ethan/'
-  base: '/Ethan/',
+  base: '/',
 })
