@@ -154,6 +154,7 @@ export const PageFiveBecomingCards: React.FC = () => {
           className="absolute top-0 bottom-0 flex items-center cursor-grab active:cursor-grabbing touch-pan-y"
           style={{ x, left: 0 }} 
           drag="x"
+          dragDirectionLock={true} // Locks drag direction to either X or Y based on initial movement
           dragConstraints={{ left: minDrag, right: maxDrag }}
           dragElastic={0.1}
           onDragEnd={handleDragEnd}
