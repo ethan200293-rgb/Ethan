@@ -76,29 +76,28 @@ const journeyData = [
 
 export const PageSixJourney: React.FC = () => {
   return (
-    // NarrativeSection usually has h-screen. 
-    // We keep it to define the viewport frame.
-    <NarrativeSection id="journey" className="!p-0 bg-stone-50" maxWidth="max-w-full">
+    // REMOVED bg-stone-50 from here to prevent it from covering the sticky header (z-0)
+    <NarrativeSection id="journey" className="!p-0" maxWidth="max-w-full">
       
       {/* 
         SCROLL CONTAINER
-        1. overscroll-contain: Prevents scroll from leaking to parent (Page 7) immediately.
-        2. h-full: Fills the NarrativeSection.
-        3. touch-pan-y: Improves touch gesture handling.
+        1. h-[100dvh]: Use Dynamic Viewport Height to fix mobile browser bar issues.
+        2. overscroll-contain: STRICTLY traps scroll inside this div until edge is hit.
       */}
-      <div className="h-full w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth no-scrollbar relative overscroll-contain touch-pan-y">
+      <div className="h-[100dvh] w-full overflow-y-auto overflow-x-hidden snap-none scroll-smooth no-scrollbar relative overscroll-contain touch-pan-y">
         
         {/* 
           Sticky Header 
-          Fixed height to h-screen so it occupies the full view initially.
+          z-0: Base layer.
+          h-[100dvh]: Occupies full screen initially.
         */}
-        <section className="h-screen w-full flex flex-col justify-center items-center text-center p-8 snap-start sticky top-0 -z-10 pointer-events-none">
+        <section className="h-[100dvh] w-full flex flex-col justify-center items-center text-center p-8 sticky top-0 z-0 pointer-events-none">
            <motion.div
              initial={{ opacity: 0, y: 20 }}
              whileInView={{ opacity: 1, y: 0 }}
              viewport={{ once: true }}
              transition={{ duration: 1 }}
-             className="max-w-2xl space-y-10 mt-[-10vh]" // Slight visual offset upwards
+             className="max-w-2xl space-y-10 mt-[-10vh]" 
            >
               <h2 className="text-3xl md:text-5xl font-serif text-stone-900 leading-normal font-medium">
                 我不是一开始<br/>
@@ -119,24 +118,25 @@ export const PageSixJourney: React.FC = () => {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="pt-20"
               >
-                <p className="text-[10px] uppercase tracking-widest text-stone-400">Scroll to Explore</p>
+                <p className="text-[10px] uppercase tracking-widest text-stone-400">上滑阅读</p>
               </motion.div>
            </motion.div>
         </section>
 
         {/* 
           Spacer 
-          Increased to 85vh. This pushes the white content card WAY down.
-          User must scroll 85% of the screen height before the card starts covering the title.
-          This creates the "Pull Up" feel.
+          Reduced to 70vh. 
+          This means the white card starts "peeking" or is just below the fold,
+          but user MUST scroll to bring it up.
         */}
-        <div className="h-[85vh] w-full pointer-events-none"></div>
+        <div className="h-[70vh] w-full pointer-events-none"></div>
 
         {/* 
           Scrolling Content (The White Card)
-          Added min-h-screen to ensure it covers the previous content fully.
+          z-10: Sits ON TOP of the sticky header.
+          bg-stone-50: Provides the background that covers the header text as it scrolls up.
         */}
-        <div className="relative w-full max-w-5xl mx-auto px-6 pb-20 bg-stone-50 z-10 min-h-screen rounded-t-[3rem] shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.1)] border-t border-stone-100">
+        <div className="relative w-full max-w-5xl mx-auto px-6 pb-20 bg-stone-50 z-10 min-h-screen rounded-t-[3rem] shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)] border-t border-stone-100">
             
             {/* Timeline Line */}
             <div className="absolute left-8 md:left-1/2 top-24 bottom-48 w-[1px] bg-stone-200 md:-translate-x-1/2 hidden md:block" />
@@ -197,10 +197,9 @@ export const PageSixJourney: React.FC = () => {
 
             {/* 
                Bottom Buffer Area
-               Huge space at the bottom to ensure the user finishes reading
-               before the scroll limit is hit.
+               Ensures user has plenty of space to finish reading before the scroll trap releases.
             */}
-            <div className="h-[40vh] flex flex-col items-center justify-center opacity-60">
+            <div className="h-[50vh] flex flex-col items-center justify-center opacity-60">
               <div className="w-[1px] h-16 bg-stone-300 mb-4"></div>
               <span className="text-xs text-stone-400 tracking-widest uppercase">Continue Journey</span>
             </div>
