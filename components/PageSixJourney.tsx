@@ -76,18 +76,29 @@ const journeyData = [
 
 export const PageSixJourney: React.FC = () => {
   return (
-    // Reset padding to allow full-height scroll container
+    // NarrativeSection usually has h-screen. 
+    // We keep it to define the viewport frame.
     <NarrativeSection id="journey" className="!p-0 bg-stone-50" maxWidth="max-w-full">
-      <div className="h-full w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth no-scrollbar relative group">
+      
+      {/* 
+        SCROLL CONTAINER
+        1. overscroll-contain: Prevents scroll from leaking to parent (Page 7) immediately.
+        2. h-full: Fills the NarrativeSection.
+        3. touch-pan-y: Improves touch gesture handling.
+      */}
+      <div className="h-full w-full overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth no-scrollbar relative overscroll-contain touch-pan-y">
         
-        {/* Screen 1: Header (Acts as a cover that gets scrolled away or covered) */}
-        <section className="h-full w-full flex flex-col justify-center items-center text-center p-8 snap-start sticky top-0 -z-10">
+        {/* 
+          Sticky Header 
+          Fixed height to h-screen so it occupies the full view initially.
+        */}
+        <section className="h-screen w-full flex flex-col justify-center items-center text-center p-8 snap-start sticky top-0 -z-10 pointer-events-none">
            <motion.div
              initial={{ opacity: 0, y: 20 }}
              whileInView={{ opacity: 1, y: 0 }}
              viewport={{ once: true }}
              transition={{ duration: 1 }}
-             className="max-w-2xl space-y-10"
+             className="max-w-2xl space-y-10 mt-[-10vh]" // Slight visual offset upwards
            >
               <h2 className="text-3xl md:text-5xl font-serif text-stone-900 leading-normal font-medium">
                 我不是一开始<br/>
@@ -102,31 +113,37 @@ export const PageSixJourney: React.FC = () => {
                 </p>
               </div>
 
+              {/* Animated Scroll Hint */}
               <motion.div 
                 animate={{ y: [0, 8, 0], opacity: [0.3, 0.8, 0.3] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="pt-16"
+                className="pt-20"
               >
-                <p className="text-[10px] uppercase tracking-widest text-stone-400">Scroll Down</p>
+                <p className="text-[10px] uppercase tracking-widest text-stone-400">Scroll to Explore</p>
               </motion.div>
            </motion.div>
         </section>
 
-        {/* Spacer to allow the sticky header to be seen before content arrives */}
-        <div className="h-[50vh] w-full"></div>
+        {/* 
+          Spacer 
+          Increased to 85vh. This pushes the white content card WAY down.
+          User must scroll 85% of the screen height before the card starts covering the title.
+          This creates the "Pull Up" feel.
+        */}
+        <div className="h-[85vh] w-full pointer-events-none"></div>
 
-        {/* Scrolling Content Sections */}
-        <div className="relative w-full max-w-5xl mx-auto px-6 pb-32 bg-stone-50 z-10 min-h-screen rounded-t-[3rem] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.05)] border-t border-stone-100">
+        {/* 
+          Scrolling Content (The White Card)
+          Added min-h-screen to ensure it covers the previous content fully.
+        */}
+        <div className="relative w-full max-w-5xl mx-auto px-6 pb-20 bg-stone-50 z-10 min-h-screen rounded-t-[3rem] shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.1)] border-t border-stone-100">
             
             {/* Timeline Line */}
-            <div className="absolute left-8 md:left-1/2 top-24 bottom-24 w-[1px] bg-stone-200 md:-translate-x-1/2 hidden md:block" />
-
-            {/* Mobile Timeline */}
-            <div className="absolute left-8 top-24 bottom-24 w-[1px] bg-stone-200 md:hidden" />
+            <div className="absolute left-8 md:left-1/2 top-24 bottom-48 w-[1px] bg-stone-200 md:-translate-x-1/2 hidden md:block" />
+            <div className="absolute left-8 top-24 bottom-48 w-[1px] bg-stone-200 md:hidden" />
 
             <div className="pt-24 space-y-24 md:space-y-32">
               {journeyData.map((item, idx) => {
-                // Determine layout: Zig-zag for normal items, Center for end item
                 const isEven = idx % 2 === 0;
                 
                 return (
@@ -155,7 +172,7 @@ export const PageSixJourney: React.FC = () => {
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ margin: "-10% 0px -20% 0px", once: true }}
                           transition={{ duration: 0.8, ease: "easeOut" }}
-                          className={`${item.isEnd ? 'bg-stone-100 p-8 md:p-12 rounded-2xl' : ''}`}
+                          className={`${item.isEnd ? 'bg-stone-100 p-8 md:p-12 rounded-2xl shadow-inner' : ''}`}
                         >
                           {item.text.map((line, i) => (
                             <p 
@@ -178,9 +195,14 @@ export const PageSixJourney: React.FC = () => {
               })}
             </div>
 
-            {/* Final Footer Spacer */}
-            <div className="h-32 flex items-center justify-center">
-              <div className="w-1 h-12 bg-gradient-to-b from-stone-300 to-transparent opacity-50"></div>
+            {/* 
+               Bottom Buffer Area
+               Huge space at the bottom to ensure the user finishes reading
+               before the scroll limit is hit.
+            */}
+            <div className="h-[40vh] flex flex-col items-center justify-center opacity-60">
+              <div className="w-[1px] h-16 bg-stone-300 mb-4"></div>
+              <span className="text-xs text-stone-400 tracking-widest uppercase">Continue Journey</span>
             </div>
         </div>
 
