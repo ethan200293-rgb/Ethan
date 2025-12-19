@@ -157,7 +157,8 @@ export const PageThreeCards: React.FC = () => {
     });
   }, [activeIndex, containerWidth, cardWidth, gap, centerOffset, x]);
 
-  const handleDragEnd = (e: any, { offset, velocity }: PanInfo) => {
+  // Changed 'e' to '_' to ignore unused variable warning
+  const handleDragEnd = (_: any, { offset, velocity }: PanInfo) => {
     const swipeThreshold = 30; // Min distance to consider a swipe
     const velocityThreshold = 0.2; // Min velocity to consider a fast swipe
 
@@ -212,7 +213,7 @@ export const PageThreeCards: React.FC = () => {
                 <Card 
                   data={card} 
                   isActive={isActive} 
-                  width={cardWidth}
+                  // Removed width prop here as it was unused in Card
                   onClick={() => setActiveIndex(index)}
                 />
               </div>
@@ -245,9 +246,9 @@ export const PageThreeCards: React.FC = () => {
 const Card: React.FC<{ 
   data: typeof cardsData[0], 
   isActive: boolean, 
-  width: number,
+  // Removed unused width prop from type definition
   onClick: () => void 
-}> = ({ data, isActive, width, onClick }) => {
+}> = ({ data, isActive, onClick }) => {
   // NEW: Track scroll state to hide/show hint
   const [hasScrolled, setHasScrolled] = useState(false);
 
