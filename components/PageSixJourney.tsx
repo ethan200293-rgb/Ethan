@@ -76,22 +76,25 @@ const journeyData = [
 
 export const PageSixJourney: React.FC = () => {
   return (
-    // REMOVED bg-stone-50 from here to prevent it from covering the sticky header (z-0)
-    <NarrativeSection id="journey" className="!p-0" maxWidth="max-w-full">
+    // Added 'snap-stop-always' to ensure momentum scrolling doesn't skip this page easily
+    <NarrativeSection id="journey" className="!p-0 snap-stop-always" maxWidth="max-w-full">
       
       {/* 
         SCROLL CONTAINER
-        1. h-[100dvh]: Use Dynamic Viewport Height to fix mobile browser bar issues.
-        2. overscroll-contain: STRICTLY traps scroll inside this div until edge is hit.
+        1. h-[100dvh]: Dynamic viewport height.
+        2. REMOVED 'overscroll-contain': This allows the scroll to bubble up to Page 5 (at top) or down to Page 7 (at bottom).
+        3. touch-pan-y: Explicitly handle vertical gestures.
       */}
-      <div className="h-[100dvh] w-full overflow-y-auto overflow-x-hidden snap-none scroll-smooth no-scrollbar relative overscroll-contain touch-pan-y">
+      <div className="h-[100dvh] w-full overflow-y-auto overflow-x-hidden snap-none scroll-smooth no-scrollbar relative touch-pan-y">
         
         {/* 
           Sticky Header 
-          z-0: Base layer.
-          h-[100dvh]: Occupies full screen initially.
+          1. REMOVED 'pointer-events-none': This is CRITICAL. It ensures that when you touch the background, 
+             the INTERNAL scroll container captures the event (to scroll up/down), 
+             rather than letting it pass through to the Parent App (which would trigger a page flip).
+          2. z-0: Base layer.
         */}
-        <section className="h-[100dvh] w-full flex flex-col justify-center items-center text-center p-8 sticky top-0 z-0 pointer-events-none">
+        <section className="h-[100dvh] w-full flex flex-col justify-center items-center text-center p-8 sticky top-0 z-0 select-none">
            <motion.div
              initial={{ opacity: 0, y: 20 }}
              whileInView={{ opacity: 1, y: 0 }}
@@ -125,16 +128,14 @@ export const PageSixJourney: React.FC = () => {
 
         {/* 
           Spacer 
-          Reduced to 70vh. 
-          This means the white card starts "peeking" or is just below the fold,
-          but user MUST scroll to bring it up.
+          1. REMOVED 'pointer-events-none': Ensures touches here drive the internal scroll, not the page flip.
+          2. h-[70vh]: Defines the "pull up" distance.
         */}
-        <div className="h-[70vh] w-full pointer-events-none"></div>
+        <div className="h-[70vh] w-full"></div>
 
         {/* 
           Scrolling Content (The White Card)
           z-10: Sits ON TOP of the sticky header.
-          bg-stone-50: Provides the background that covers the header text as it scrolls up.
         */}
         <div className="relative w-full max-w-5xl mx-auto px-6 pb-20 bg-stone-50 z-10 min-h-screen rounded-t-[3rem] shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)] border-t border-stone-100">
             
@@ -197,9 +198,9 @@ export const PageSixJourney: React.FC = () => {
 
             {/* 
                Bottom Buffer Area
-               Ensures user has plenty of space to finish reading before the scroll trap releases.
+               Enough space to signal "End of Journey" before snapping to the next page.
             */}
-            <div className="h-[50vh] flex flex-col items-center justify-center opacity-60">
+            <div className="h-[30vh] flex flex-col items-center justify-center opacity-60">
               <div className="w-[1px] h-16 bg-stone-300 mb-4"></div>
               <span className="text-xs text-stone-400 tracking-widest uppercase">Continue Journey</span>
             </div>
