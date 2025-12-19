@@ -12,6 +12,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     
+    <!-- ========== 新增：微信分享卡片核心 OG 标签 ========== -->
+    <!-- 卡片标题（朋友圈显示的大标题，替换成你想要的） -->
+    <meta property="og:title" content="也许这是我们重新认识的第一步" />
+    <!-- 卡片描述（标题下方的小字，替换成你的项目介绍） -->
+    <meta property="og:description" content="在这个技能和经验快速贬值的时代，我想和你这样介绍我自己" />
+    <!-- 链接类型（固定为website） -->
+    <meta property="og:type" content="website" />
+    <!-- 网页实际访问地址（替换成你的自定义域名/GitHub Pages地址） -->
+    <meta property="og:url" content="https://xiaojin-ai.tech" />
+    <!-- 微信专用优化标签 -->
+    <meta name="format-detection" content="telephone=no,email=no" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <!-- ========== OG 标签结束 ========== -->
+    
     <style>
       body {
         font-family: 'Noto Serif SC', serif;
@@ -29,7 +43,7 @@
         background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
       }
     </style>
-</head>
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
