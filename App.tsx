@@ -9,9 +9,9 @@ import { PageSevenEnding } from './components/PageSevenEnding';
 
 const App: React.FC = () => {
   return (
-    // Updated for Light Theme: bg-stone-50, text-stone-800
+    // Updated to h-[100dvh] for mobile browser address bar compatibility
     // Added selection colors for better UX
-    <main className="relative h-screen w-full overflow-y-scroll snap-y snap-mandatory scroll-smooth bg-stone-50 text-stone-800 no-scrollbar selection:bg-stone-200 selection:text-stone-900">
+    <main className="relative h-[100dvh] w-full overflow-y-scroll snap-y snap-mandatory scroll-smooth bg-stone-50 text-stone-800 no-scrollbar selection:bg-stone-200 selection:text-stone-900 touch-pan-y">
       
       {/* Texture Overlay */}
       <div className="fixed inset-0 z-50 pointer-events-none opacity-[0.03] bg-texture mix-blend-multiply"></div>
