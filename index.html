@@ -3,27 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 浏览器标签标题 -->
     <title>About Me - Ethan</title>
-    <!-- Keeping Tailwind CDN for simplicity -->
+    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts -->
+    <!-- 字体引入 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     
-    <!-- ========== 新增：微信分享卡片核心 OG 标签 ========== -->
-    <!-- 卡片标题（朋友圈显示的大标题，替换成你想要的） -->
+    <!-- ========== 微信分享卡片核心 OG 标签（完整优化版） ========== -->
+    <!-- 卡片标题（简洁无特殊符号，微信优先识别） -->
     <meta property="og:title" content="也许这是我们重新认识的第一步" />
-    <!-- 卡片描述（标题下方的小字，替换成你的项目介绍） -->
+    <!-- 卡片描述（简短易懂，控制在50字内） -->
     <meta property="og:description" content="在这个技能和经验快速贬值的时代，我想和你这样介绍我自己" />
     <!-- 链接类型（固定为website） -->
     <meta property="og:type" content="website" />
-    <!-- 网页实际访问地址（替换成你的自定义域名/GitHub Pages地址） -->
-    <meta property="og:url" content="https://xiaojin-ai.tech" />
+    <!-- 网页地址（带结尾斜杠，与分享链接完全一致） -->
+    <meta property="og:url" content="https://xiaojin-ai.tech/" />
+    <!-- 必加图片（微信对有图链接解析率100%，通用占位图无需自己上传） -->
+    <meta property="og:image" content="https://picsum.photos/1200/630" />
+    <!-- 图片宽高（微信推荐比例，提升卡片显示效果） -->
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <!-- 微信专用优化标签 -->
     <meta name="format-detection" content="telephone=no,email=no" />
     <meta name="referrer" content="no-referrer-when-downgrade" />
+    <!-- 备用标签（兼容部分微信版本） -->
+    <meta name="description" content="在这个技能和经验快速贬值的时代，我想和你这样介绍我自己" />
     <!-- ========== OG 标签结束 ========== -->
     
     <style>
@@ -45,7 +53,11 @@
     </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- 新增静态文本（微信爬虫不执行JS，必须有静态内容才能抓取） -->
+      <h1 style="display: none;">也许这是我们重新认识的第一步</h1>
+      <p style="display: none;">在这个技能和经验快速贬值的时代，我想和你这样介绍我自己</p>
+    </div>
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>
