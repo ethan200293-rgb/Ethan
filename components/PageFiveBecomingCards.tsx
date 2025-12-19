@@ -197,6 +197,7 @@ const Card: React.FC<{
   onClick: () => void 
 }> = ({ data, isActive, onClick }) => {
   const [hasScrolled, setHasScrolled] = useState(false);
+  const dragStart = useRef<{x: number, y: number} | null>(null);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const scrollTop = e.currentTarget.scrollTop;
@@ -204,6 +205,23 @@ const Card: React.FC<{
       if (!hasScrolled) setHasScrolled(true);
     } else {
       if (hasScrolled) setHasScrolled(false);
+    }
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    dragStart.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragStart.current) return;
+    const dx = Math.abs(e.clientX - dragStart.current.x);
+    const dy = Math.abs(e.clientY - dragStart.current.y);
+    
+    if (dx + dy < 5) return;
+
+    // Angle check: dominance of Y over X stops the parent X-drag
+    if (dy > dx) {
+      e.stopPropagation();
     }
   };
 
@@ -241,6 +259,8 @@ const Card: React.FC<{
       <div 
         className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-12 no-scrollbar scroll-smooth touch-pan-y"
         onScroll={handleScroll}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
       >
         <div className="mb-8 text-center relative select-none">
            <span className="absolute -top-4 left-0 text-5xl md:text-6xl font-serif text-stone-100 -z-10">“</span>
