@@ -76,23 +76,20 @@ const journeyData = [
 
 export const PageSixJourney: React.FC = () => {
   return (
-    // Added 'snap-stop-always' to ensure momentum scrolling doesn't skip this page easily
+    // 'snap-stop-always' is crucial here. It prevents a momentum scroll from skipping this page.
     <NarrativeSection id="journey" className="!p-0 snap-stop-always" maxWidth="max-w-full">
       
       {/* 
         SCROLL CONTAINER
-        1. h-[100dvh]: Dynamic viewport height.
-        2. REMOVED 'overscroll-contain': This allows the scroll to bubble up to Page 5 (at top) or down to Page 7 (at bottom).
-        3. touch-pan-y: Explicitly handle vertical gestures.
+        1. h-[100dvh]: Use dynamic viewport height for mobile.
+        2. touch-pan-y: Explicitly tells browser this area handles vertical scrolling internally.
+        3. REMOVED overscroll-contain: To allow "bouncing" to the next page when at the absolute bottom.
       */}
       <div className="h-[100dvh] w-full overflow-y-auto overflow-x-hidden snap-none scroll-smooth no-scrollbar relative touch-pan-y">
         
         {/* 
           Sticky Header 
-          1. REMOVED 'pointer-events-none': This is CRITICAL. It ensures that when you touch the background, 
-             the INTERNAL scroll container captures the event (to scroll up/down), 
-             rather than letting it pass through to the Parent App (which would trigger a page flip).
-          2. z-0: Base layer.
+          z-0: Base layer.
         */}
         <section className="h-[100dvh] w-full flex flex-col justify-center items-center text-center p-8 sticky top-0 z-0 select-none">
            <motion.div
@@ -128,8 +125,8 @@ export const PageSixJourney: React.FC = () => {
 
         {/* 
           Spacer 
-          1. REMOVED 'pointer-events-none': Ensures touches here drive the internal scroll, not the page flip.
-          2. h-[70vh]: Defines the "pull up" distance.
+          1. h-[70vh]: Defines the "pull up" distance. 
+          2. Crucially, this area also accepts touches to drive the scroll.
         */}
         <div className="h-[70vh] w-full"></div>
 
@@ -198,9 +195,11 @@ export const PageSixJourney: React.FC = () => {
 
             {/* 
                Bottom Buffer Area
-               Enough space to signal "End of Journey" before snapping to the next page.
+               This large padding (40vh) ensures that even if the user scrolls vigorously,
+               there is "space" to absorb the momentum before the browser decides to snap to Page 7.
+               This effectively solves the "accidental page flip" issue without breaking the ability to leave.
             */}
-            <div className="h-[30vh] flex flex-col items-center justify-center opacity-60">
+            <div className="h-[40vh] flex flex-col items-center justify-center opacity-60">
               <div className="w-[1px] h-16 bg-stone-300 mb-4"></div>
               <span className="text-xs text-stone-400 tracking-widest uppercase">Continue Journey</span>
             </div>
