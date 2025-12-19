@@ -124,8 +124,8 @@ export const PageThreeCards: React.FC = () => {
 
   // Responsive Layout
   const isMobile = containerWidth < 768;
-  const cardWidth = isMobile ? containerWidth * 0.8 : 500; 
-  const gap = isMobile ? 10 : 40; 
+  const cardWidth = isMobile ? containerWidth * 0.85 : 500; // Slightly wider on mobile
+  const gap = isMobile ? 15 : 40; 
   
   const centerOffset = (containerWidth - cardWidth) / 2;
   const maxDrag = centerOffset;
@@ -157,31 +157,27 @@ export const PageThreeCards: React.FC = () => {
     });
   }, [activeIndex, containerWidth, cardWidth, gap, centerOffset, x]);
 
-  // Changed 'e' to '_' to ignore unused variable warning
   const handleDragEnd = (_: any, { offset, velocity }: PanInfo) => {
     const swipeThreshold = 30; // Min distance to consider a swipe
     const velocityThreshold = 0.2; // Min velocity to consider a fast swipe
 
     // Logic: ONE card at a time.
-    // If swiped left (negative offset) AND (moved far enough OR moved fast enough)
     if (offset.x < -swipeThreshold || velocity.x < -velocityThreshold) {
       setActiveIndex((prev) => Math.min(prev + 1, cardsData.length - 1));
     } 
-    // If swiped right (positive offset) AND (moved far enough OR moved fast enough)
     else if (offset.x > swipeThreshold || velocity.x > velocityThreshold) {
       setActiveIndex((prev) => Math.max(prev - 1, 0));
     }
-    // Otherwise, the state doesn't change, and useEffect will snap x back to the current activeIndex.
   };
 
   return (
     <NarrativeSection id="who-am-i-cards" className="bg-stone-100/50" maxWidth="max-w-full">
       <div 
         ref={containerRef}
-        className="relative w-full h-[85vh] flex flex-col justify-center overflow-hidden" 
+        className="relative w-full h-[85dvh] flex flex-col justify-center overflow-hidden" 
       >
         
-        {/* NEW: Page Title "我是谁" */}
+        {/* Page Title */}
         <div className="absolute top-[2vh] md:top-[5vh] left-0 right-0 z-30 flex justify-center pointer-events-none select-none">
           <h2 className="text-3xl md:text-5xl font-serif text-stone-900 tracking-[0.2em] pl-[0.2em] font-medium opacity-90">
             “我是谁”
@@ -190,15 +186,18 @@ export const PageThreeCards: React.FC = () => {
 
         {/* Carousel Track */}
         <motion.div
-          className="absolute top-0 bottom-0 flex items-center cursor-grab active:cursor-grabbing touch-pan-y"
+          className="absolute top-0 bottom-0 flex items-center cursor-grab active:cursor-grabbing"
           style={{ x, left: 0 }} 
           drag="x"
-          dragDirectionLock={true} // Locks drag direction to either X or Y based on initial movement
-          // We keep constraints so user can't drag wildly off screen, 
-          // but handleDragEnd controls the snapping.
+          dragDirectionLock={true} 
           dragConstraints={{ left: minDrag, right: maxDrag }}
-          dragElastic={0.1}
+          dragElastic={0.05} // Stiffer elastic to prevent wild dragging
           onDragEnd={handleDragEnd}
+          // touch-action: pan-y allows vertical scrolling of the PAGE, 
+          // but since we are dragging X, it separates the concerns.
+          // However, setting it to 'none' inside the drag area prevents accidental page scrolling while swiping cards.
+          // We will use pan-y to allow users to scroll past the section if they touch empty space,
+          // but the card itself will capture the drag.
         >
           {cardsData.map((card, index) => {
             const isActive = index === activeIndex;
@@ -214,7 +213,6 @@ export const PageThreeCards: React.FC = () => {
                 <Card 
                   data={card} 
                   isActive={isActive} 
-                  // Removed width prop here as it was unused in Card
                   onClick={() => setActiveIndex(index)}
                 />
               </div>
@@ -223,7 +221,7 @@ export const PageThreeCards: React.FC = () => {
         </motion.div>
 
         {/* Pagination Dots */}
-        <div className="absolute bottom-[6vh] left-0 right-0 flex justify-center gap-4 z-20">
+        <div className="absolute bottom-[2vh] md:bottom-[6vh] left-0 right-0 flex justify-center gap-4 z-20">
           {cardsData.map((_, idx) => (
             <button
               key={idx}
@@ -238,7 +236,6 @@ export const PageThreeCards: React.FC = () => {
         </div>
       </div>
       
-      {/* Page-level Scroll Indicator */}
       <ScrollIndicator />
     </NarrativeSection>
   );
@@ -247,10 +244,8 @@ export const PageThreeCards: React.FC = () => {
 const Card: React.FC<{ 
   data: typeof cardsData[0], 
   isActive: boolean, 
-  // Removed unused width prop from type definition
   onClick: () => void 
 }> = ({ data, isActive, onClick }) => {
-  // NEW: Track scroll state to hide/show hint
   const [hasScrolled, setHasScrolled] = useState(false);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -268,27 +263,27 @@ const Card: React.FC<{
       className={`
         relative bg-white rounded-xl md:rounded-2xl overflow-hidden
         border border-stone-200/60 pointer-events-auto
-        /* Reduced base height to accommodate 1.1x scale without clipping */
-        h-[55vh] md:h-[550px] flex flex-col w-full
+        /* Mobile optimization: taller cards */
+        h-[60dvh] md:h-[550px] flex flex-col w-full
         ${isActive ? 'shadow-2xl shadow-stone-300/50' : 'shadow-none'}
       `}
       animate={{
-        scale: isActive ? 1.1 : 0.75,
-        opacity: isActive ? 1 : 0.3, 
-        filter: isActive ? 'blur(0px)' : 'blur(4px)',
+        scale: isActive ? 1 : 0.9, // Less scaling difference on mobile for stability
+        opacity: isActive ? 1 : 0.4, 
+        filter: isActive ? 'blur(0px)' : 'blur(2px)',
         zIndex: isActive ? 50 : 10,
       }}
       transition={{ 
-        duration: 0.5, 
+        duration: 0.4, 
         ease: "easeOut" 
       }}
     >
       {/* Header */}
-      <div className="pt-8 px-8 md:px-12 pb-6 flex flex-col items-center text-center border-b border-stone-100 bg-stone-50/20 backdrop-blur-sm">
-        <div className={`mb-4 p-3 rounded-full ${isActive ? 'bg-stone-100 text-stone-800' : 'bg-stone-50 text-stone-300'} transition-colors duration-500`}>
+      <div className="pt-6 px-6 md:pt-8 md:px-12 pb-4 flex flex-col items-center text-center border-b border-stone-100 bg-stone-50/20 backdrop-blur-sm select-none">
+        <div className={`mb-3 p-2 md:p-3 rounded-full ${isActive ? 'bg-stone-100 text-stone-800' : 'bg-stone-50 text-stone-300'} transition-colors duration-500`}>
           {data.icon}
         </div>
-        <h3 className="text-2xl md:text-3xl font-serif text-stone-900 tracking-wide flex items-baseline gap-3">
+        <h3 className="text-xl md:text-3xl font-serif text-stone-900 tracking-wide flex items-baseline gap-3">
           <span className="font-bold">{data.titleEn}</span>
           <span className="w-[1px] h-5 bg-stone-300"></span>
           <span className="font-light">{data.titleCn}</span>
@@ -296,46 +291,41 @@ const Card: React.FC<{
       </div>
 
       {/* Scrollable Content Area */}
-      {/* Added onScroll listener */}
+      {/* touch-action: pan-y enables vertical scrolling INSIDE the card without triggering page scroll immediately if handled properly */}
       <div 
-        className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-12 no-scrollbar scroll-smooth"
+        className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-12 no-scrollbar scroll-smooth touch-pan-y"
         onScroll={handleScroll}
       >
-        {/* Quote */}
-        <div className="mb-10 text-center relative">
-           <span className="absolute -top-4 left-0 text-6xl font-serif text-stone-100 -z-10">“</span>
-           <p className="text-lg md:text-[22px] font-serif italic leading-loose text-stone-800 font-medium">
+        <div className="mb-8 text-center relative select-none">
+           <span className="absolute -top-4 left-0 text-5xl md:text-6xl font-serif text-stone-100 -z-10">“</span>
+           <p className="text-base md:text-[22px] font-serif italic leading-loose text-stone-800 font-medium">
             {data.quote}
           </p>
         </div>
 
-        {/* Sections */}
-        <div className="space-y-10">
+        <div className="space-y-8 pb-10">
           {data.sections.map((section, idx) => (
-            <div key={idx} className="space-y-4">
-              <h4 className="flex items-center gap-3 text-xs md:text-sm font-sans font-bold uppercase tracking-[0.2em] text-stone-400">
+            <div key={idx} className="space-y-3">
+              <h4 className="flex items-center gap-3 text-[10px] md:text-sm font-sans font-bold uppercase tracking-[0.2em] text-stone-400 select-none">
                 <span className="h-[1px] flex-1 bg-stone-100"></span>
                 {section.title}
                 <span className="h-[1px] flex-1 bg-stone-100"></span>
               </h4>
-              <ul className="space-y-4">
+              <ul className="space-y-3">
                 {section.items.map((item, i) => (
-                  <li key={i} className="text-base md:text-[17px] leading-relaxed text-stone-600 font-sans flex items-start gap-4 group">
-                    <span className="block w-1.5 h-1.5 mt-2.5 rounded-full bg-stone-300 group-hover:bg-stone-400 transition-colors flex-shrink-0" />
+                  <li key={i} className="text-sm md:text-[17px] leading-relaxed text-stone-600 font-sans flex items-start gap-3 group">
+                    <span className="block w-1.5 h-1.5 mt-2 rounded-full bg-stone-300 group-hover:bg-stone-400 transition-colors flex-shrink-0" />
                     <span className="text-justify opacity-90">{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
-          <div className="h-4" />
         </div>
       </div>
       
-      {/* Fading bottom overlay */}
-      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
 
-      {/* NEW: 'Slide Down' Hint - visible only when active and not scrolled */}
       <AnimatePresence>
         {isActive && !hasScrolled && (
           <motion.div
@@ -343,9 +333,9 @@ const Card: React.FC<{
             animate={{ opacity: 0.8, y: [0, 4, 0] }}
             exit={{ opacity: 0 }}
             transition={{ delay: 0.5, duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-6 left-0 right-0 flex justify-center items-center z-50 pointer-events-none select-none"
+            className="absolute bottom-4 left-0 right-0 flex justify-center items-center z-50 pointer-events-none select-none"
           >
-             <span className="text-stone-400 text-[10px] md:text-xs tracking-[0.25em] font-sans px-2 py-1">下滑</span>
+             <span className="text-stone-400 text-[10px] md:text-xs tracking-[0.25em] font-sans px-2 py-1 bg-white/50 rounded-full backdrop-blur-sm">下滑查看更多</span>
           </motion.div>
         )}
       </AnimatePresence>
